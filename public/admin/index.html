@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Dulce Valentina</title>
+    <link rel="icon" href="/logo.png" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Plus+Jakarta+Sans:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #fdf8f8;
+            color: #3d2b2b;
+        }
+        .font-fancy { font-family: 'Dancing Script', cursive; }
+        .font-title { font-family: 'Playfair Display', serif; }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(214, 51, 132, 0.1);
+        }
+        
+        .btn-primary {
+            background-color: #d63384;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #c02874;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(214, 51, 132, 0.4);
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid #f0e6e6;
+            background: #fafafa;
+            transition: all 0.3s ease;
+            outline: none;
+            font-size: 0.875rem;
+        }
+        .input-field:focus {
+            border-color: #d63384;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(214, 51, 132, 0.1);
+        }
+        
+        /* Modal Animation */
+        #modal {
+            transition: opacity 0.3s ease;
+        }
+        #modal-content {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .product-row {
+            transition: all 0.2s;
+        }
+        .product-row:hover {
+            background-color: rgba(214, 51, 132, 0.02);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="glass sticky top-0 z-40 px-6 py-4 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-3">
+            <img src="/logo.png" alt="Logo" class="h-10">
+            <span class="font-fancy text-2xl text-[#d63384] mt-1">Dashboard</span>
+        </div>
+        <div class="flex items-center gap-6">
+            <a href="/" target="_blank" class="text-xs uppercase font-bold tracking-widest opacity-60 hover:text-[#d63384] transition">Ver Catálogo <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a>
+            <button onclick="logout()" class="text-xs uppercase font-bold tracking-widest text-red-500 hover:text-red-700 transition">Salir</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 md:p-10 max-w-7xl mx-auto w-full">
+        
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div>
+                <h1 class="font-title text-3xl mb-1">Gestión de Productos</h1>
+                <p class="text-xs opacity-60">Administra el catálogo de Dulce Valentina</p>
+            </div>
+            <button onclick="openModal()" class="btn-primary px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i> Nuevo Producto
+            </button>
+        </div>
+
+        <!-- Table Container -->
+        <div class="glass rounded-2xl overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50/50 border-b border-gray-100 text-[10px] uppercase tracking-widest opacity-60">
+                            <th class="px-6 py-4 font-bold">Producto</th>
+                            <th class="px-6 py-4 font-bold">Categoría</th>
+                            <th class="px-6 py-4 font-bold">Precio Info</th>
+                            <th class="px-6 py-4 font-bold">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-list" class="text-sm">
+                        <!-- Carga dinámica -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-6 text-center text-[10px] uppercase tracking-widest opacity-30">
+        Dulce Valentina Pastelería &copy; 2024
+    </footer>
+
+    <!-- Modal Form -->
+    <div id="modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none">
+        <div id="modal-content" class="bg-white w-full max-w-xl rounded-[2rem] shadow-2xl p-8 scale-95">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="modal-title" class="font-title text-2xl">Añadir Producto</h2>
+                <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition text-gray-500">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <form id="productForm" class="space-y-4">
+                <input type="hidden" id="prod-id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Nombre</label>
+                        <input type="text" id="prod-name" class="input-field" required>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Categoría</label>
+                        <select id="prod-category" class="input-field" required>
+                            <option value="tortas">Tortas</option>
+                            <option value="alfajores">Alfajores</option>
+                            <option value="especiales">Especiales</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">URL Imagen</label>
+                    <input type="url" id="prod-image" class="input-field" placeholder="https://..." required>
+                </div>
+                
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Descripción</label>
+                    <textarea id="prod-desc" rows="3" class="input-field resize-none" required></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Etiqueta (Opcional)</label>
+                        <input type="text" id="prod-tag" class="input-field" placeholder="Ej: Clásico Boutique">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Información extra</label>
+                        <input type="text" id="prod-info" class="input-field" placeholder="Ej: Desde 10 personas" required>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Precio Vista</label>
+                        <input type="text" id="prod-priceDisplay" class="input-field" placeholder="Ej: $18.500 CLP" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Valor para WhatsApp</label>
+                    <input type="text" id="prod-priceValue" class="input-field" placeholder="Ej: 18.500" required>
+                </div>
+                
+                <div class="pt-4 border-t border-gray-100 flex justify-end gap-3">
+                    <button type="button" onclick="closeModal()" class="px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-gray-100 transition">Cancelar</button>
+                    <button type="submit" class="btn-primary px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-widest">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Check auth on load
+        fetch('/api/check-auth').then(r => r.json()).then(d => {
+            if(!d.authenticated) window.location.href = '/admin/login.html';
+        });
+
+        let products = [];
+
+        async function loadProducts() {
+            const res = await fetch('/api/products');
+            products = await res.json();
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('product-list');
+            tbody.innerHTML = '';
+            
+            products.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = 'product-row border-b border-gray-50';
+                tr.innerHTML = `
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                                <img src="${p.image}" class="w-full h-full object-cover" onerror="this.src='/logo.png'">
+                            </div>
+                            <div>
+                                <div class="font-bold text-[#3d2b2b]">${p.name}</div>
+                                ${p.tag ? `<span class="text-[9px] bg-[#d63384]/10 text-[#d63384] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">${p.tag}</span>` : ''}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 capitalize text-gray-500">${p.category}</td>
+                    <td class="px-6 py-4">
+                        <div class="font-bold text-[#d63384]">${p.priceDisplay}</div>
+                        <div class="text-[10px] text-gray-400">${p.info}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex gap-2">
+                            <button onclick="editProduct('${p.id}')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-500 hover:text-white transition">
+                                <i class="fa-solid fa-pen text-xs"></i>
+                            </button>
+                            <button onclick="deleteProduct('${p.id}')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Modal Logic
+        const modal = document.getElementById('modal');
+        const modalContent = document.getElementById('modal-content');
+        
+        function openModal(id = null) {
+            const form = document.getElementById('productForm');
+            form.reset();
+            document.getElementById('prod-id').value = '';
+            document.getElementById('modal-title').innerText = 'Añadir Producto';
+
+            if(id) {
+                const p = products.find(x => x.id === id);
+                if(p) {
+                    document.getElementById('modal-title').innerText = 'Editar Producto';
+                    document.getElementById('prod-id').value = p.id;
+                    document.getElementById('prod-name').value = p.name;
+                    document.getElementById('prod-category').value = p.category;
+                    document.getElementById('prod-image').value = p.image;
+                    document.getElementById('prod-desc').value = p.description;
+                    document.getElementById('prod-tag').value = p.tag || '';
+                    document.getElementById('prod-info').value = p.info;
+                    document.getElementById('prod-priceDisplay').value = p.priceDisplay;
+                    document.getElementById('prod-priceValue').value = p.priceValue;
+                }
+            }
+            
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-95');
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.add('scale-95');
+        }
+
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('prod-id').value;
+            const data = {
+                name: document.getElementById('prod-name').value,
+                category: document.getElementById('prod-category').value,
+                image: document.getElementById('prod-image').value,
+                description: document.getElementById('prod-desc').value,
+                tag: document.getElementById('prod-tag').value,
+                info: document.getElementById('prod-info').value,
+                priceDisplay: document.getElementById('prod-priceDisplay').value,
+                priceValue: document.getElementById('prod-priceValue').value,
+            };
+
+            const url = id ? `/api/products/${id}` : `/api/products`;
+            const method = id ? 'PUT' : 'POST';
+
+            await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            closeModal();
+            loadProducts();
+        });
+
+        function editProduct(id) {
+            openModal(id);
+        }
+
+        async function deleteProduct(id) {
+            if(confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+                await fetch(`/api/products/${id}`, { method: 'DELETE' });
+                loadProducts();
+            }
+        }
+
+        async function logout() {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/admin/login.html';
+        }
+
+        // Init
+        loadProducts();
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+[
+  {
+    "id": "1",
+    "name": "Torta Pompadour",
+    "category": "tortas",
+    "image": "https://scontent-scl3-1.cdninstagram.com/v/t51.75761-15/497682461_18043609211623453_1978631897209004976_n.jpg?stp=dst-jpegr_e35_p720x720_tt6&_nc_cat=102&ig_cache_key=MzYzMjY3MzM2MzIxOTIxOTU3NA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5oZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=u2ZaccL_ArUQ7kNvwFHAf8N&_nc_oc=Ado_RRK_fhzxOhVb0FcbpmHcGQ_N76wkhtgCznPPawinGsnEC3Tx6v-vYdxRs8NEn3E&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-scl3-1.cdninstagram.com&_nc_gid=MCz5p3KLE5sjxo924ueViQ&_nc_ss=7a22e&oh=00_Af4F9Gva74cbfNrANYZVmJNZBmjgu57eTwOyoGvoNLiqSQ&oe=6A103D42",
+    "tag": "Clásico Boutique",
+    "description": "Finas capas de hojarasca artesanal, crema chantilly premium y una cuidadosa selección de frambuesas silvestres.",
+    "info": "Desde 10 personas",
+    "priceDisplay": "$18.500 CLP",
+    "priceValue": "18.500"
+  },
+  {
+    "id": "2",
+    "name": "Diseño Personalizado",
+    "category": "tortas",
+    "image": "https://scontent-scl3-1.cdninstagram.com/v/t51.82787-15/539425609_18055370570623453_3517229699129242266_n.jpg?stp=dst-jpegr_e35_tt6&_nc_cat=111&ig_cache_key=MzcwNzg4NzA2MDAyMjA3ODc3MA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQueHBpZHMuMTQ0MC5oZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=Sb2cZg-exSYQ7kNvwF2LkbN&_nc_oc=AdoBrD_msej82HLWVdFBY-bIXLHBIdSRzGeIBZhdD3IU-quZh-EF6-2iqdmujBKqW20&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-scl3-1.cdninstagram.com&_nc_gid=6us7QCtKPZoLDBNKrDY4HQ&_nc_ss=7a22e&oh=00_Af4E0OuTuGneQJqpNn2gAjXsatug-7DmiX8FsiymicCsQA&oe=6A104FB4",
+    "tag": "",
+    "description": "Creamos la torta de tus sueños. Tú eliges el sabor, relleno y la temática para tus celebraciones.",
+    "info": "Cotización a medida",
+    "priceDisplay": "Consultar",
+    "priceValue": "Cotización"
+  },
+  {
+    "id": "3",
+    "name": "Pack Alfajores Mix",
+    "category": "alfajores",
+    "image": "https://scontent-scl3-1.cdninstagram.com/v/t51.82787-15/559926714_18060645341623453_2487185030123882186_n.jpg?stp=dst-jpegr_e35_p720x720_tt6&_nc_cat=103&ig_cache_key=MzczODQyNTk1ODE0ODk0ODcxNQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5oZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=TNnjpsSNvVAQ7kNvwEB38bI&_nc_oc=AdqDe-fVfVvoH6ap3XwYEaBxzvzyn9xsKHq5MqIC3xPWWnurIfGx6uK2y9L5tVSfCp0&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-scl3-1.cdninstagram.com&_nc_gid=6us7QCtKPZoLDBNKrDY4HQ&_nc_ss=7a22e&oh=00_Af7mgapx7yHMJBkJ1WXb1ZjC8zih55aYIK8jKxoLTdwjnA&oe=6A105070",
+    "tag": "",
+    "description": "Exquisitos alfajores rellenos de manjar de campo y bañados en chocolate de origen 55% cacao.",
+    "info": "Caja de 12 unidades",
+    "priceDisplay": "$5.000 CLP",
+    "priceValue": "12.000"
+  }
+]

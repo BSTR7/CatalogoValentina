@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dulce Valentina Pastelería | Catálogo</title>
+    <link rel="icon" href="/logo.png" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Plus+Jakarta+Sans:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+    <!-- Carga de Font Awesome para que el icono de WhatsApp funcione -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #fdf8f8;
+            color: #3f2f2f;
+        }
+
+        .font-fancy {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        .font-title {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(214, 51, 132, 0.1);
+        }
+
+        .product-card {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px -15px rgba(214, 51, 132, 0.15);
+        }
+
+        .category-btn {
+            transition: all 0.3s ease;
+            color: #a08585;
+        }
+
+        .category-btn.active {
+            background-color: #d63384;
+            color: white;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .price-text {
+            color: #d63384;
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .btn-whatsapp {
+            background-color: #3d2b2b;
+            transition: all 0.3s ease;
+        }
+
+        .btn-whatsapp:hover {
+            background-color: #25d366;
+            /* Cambiado a color verde WhatsApp al hover */
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header / Logo -->
+    <nav class="sticky top-0 z-50 glass">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="logo.png" alt="Dulce Valentina Logo" class="h-24 w-auto object-contain">
+                <div class="flex flex-col">
+                    <span class="font-fancy text-2xl text-[#d63384] leading-none">Dulce Valentina</span>
+                    <span class="text-[9px] tracking-[0.3em] uppercase opacity-60 mt-1">Pastelería Boutique</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="https://instagram.com/dulce.valentinacl" target="_blank"
+                    class="text-[11px] font-semibold tracking-widest uppercase hover:text-[#d63384] transition-colors flex items-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                    <span class="hidden sm:inline">@dulce.valentinacl</span>
+                </a>
+                <a href="/admin/login.html"
+                    class="text-[11px] font-semibold tracking-widest uppercase text-gray-400 hover:text-[#d63384] transition-colors flex items-center gap-2"
+                    title="Panel de Control">
+                    <i class="fa-solid fa-user-lock text-sm"></i>
+                    <span class="hidden sm:inline">Admin</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="py-16 px-6 text-center max-w-3xl mx-auto">
+        <h1 class="font-title text-4xl md:text-6xl text-[#3d2b2b] mb-4">Pastelería Artesanal</h1>
+        <div class="w-16 h-[1px] bg-[#d63384] mx-auto mb-6"></div>
+        <p class="opacity-70 text-sm md:text-base leading-relaxed tracking-wide">
+            Repostería de autor diseñada para celebrar tus momentos más especiales con elegancia y el sabor de lo hecho
+            en casa.
+        </p>
+    </header>
+
+    <!-- Filtros -->
+    <div class="flex flex-wrap justify-center gap-4 mb-16 px-4">
+        <button onclick="filter('todos', this)"
+            class="category-btn active px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest border border-transparent transition-all">Todos</button>
+        <button onclick="filter('tortas', this)"
+            class="category-btn px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest border border-gray-100 transition-all">Tortas</button>
+        <button onclick="filter('alfajores', this)"
+            class="category-btn px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest border border-gray-100 transition-all">Alfajores</button>
+        <button onclick="filter('especiales', this)"
+            class="category-btn px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest border border-gray-100 transition-all">Especiales</button>
+    </div>
+
+    <!-- Catálogo Grid -->
+    <main id="catalog-container"
+        class="max-w-6xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 pb-32">
+        <!-- Los productos se cargarán aquí dinámicamente -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white py-20 px-6 text-center border-t border-gray-50">
+        <div class="font-fancy text-4xl text-[#d63384] mb-6">Dulce Valentina</div>
+        <div class="flex justify-center gap-8 mb-10 text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
+            <a href="https://instagram.com/dulce.valentinacl" class="hover:text-[#d63384] transition-all">Instagram</a>
+            <a href="https://wa.me/569XXXXXXXX" class="hover:text-[#d63384] transition-all">WhatsApp</a>
+        </div>
+        <div class="max-w-xs mx-auto h-[1px] bg-gray-100 mb-8"></div>
+        <p class="text-[9px] tracking-[0.4em] opacity-30 uppercase">Longa, Chile &bull; Repostería Fina &bull; 2024
+        </p>
+    </footer>
+
+    <script>
+        // CONFIGURACIÓN DE CONTACTO
+        const WHATSAPP_NUMBER = "569XXXXXXXX";
+
+        async function fetchProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const products = await response.json();
+                renderProducts(products);
+            } catch (error) {
+                console.error("Error loading products:", error);
+            }
+        }
+
+        function renderProducts(products) {
+            const container = document.getElementById('catalog-container');
+            container.innerHTML = ''; // Limpiar loader
+
+            products.forEach(p => {
+                const tagHtml = p.tag ? `
+                    <div class="absolute top-6 right-6 glass px-4 py-1 rounded-full text-[10px] font-bold tracking-tighter uppercase">
+                        ${p.tag}
+                    </div>` : '';
+
+                const cardHtml = `
+                    <div class="product-card rounded-t-[3rem] rounded-b-2xl overflow-hidden" data-category="${p.category}">
+                        <div class="relative h-80 overflow-hidden">
+                            <img src="${p.image}"
+                                alt="${p.name}"
+                                onerror="this.src='/logo.png'"
+                                class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                            ${tagHtml}
+                        </div>
+                        <div class="p-8">
+                            <h3 class="font-title text-2xl mb-3">${p.name}</h3>
+                            <p class="text-xs leading-relaxed opacity-60 mb-6">${p.description}</p>
+
+                            <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-50">
+                                <span class="text-[10px] uppercase tracking-widest opacity-40 italic">${p.info}</span>
+                                <span class="price-text">${p.priceDisplay}</span>
+                            </div>
+
+                            <button onclick="sendOrder('${p.name}', '${p.priceValue}')"
+                                class="btn-whatsapp w-full text-white py-4 rounded-xl flex items-center justify-center gap-3 text-xs font-bold uppercase tracking-widest">
+                                <i class="fa-brands fa-whatsapp text-lg" style="color: rgb(255, 255, 255);"></i>
+                                Consultar pedido
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+
+            // Re-aplicar el filtro activo si hay alguno seleccionado
+            const activeBtn = document.querySelector('.category-btn.active');
+            if (activeBtn) {
+                const cat = activeBtn.innerText.toLowerCase();
+                filter(cat === 'todos' ? 'todos' : cat, activeBtn);
+            }
+        }
+
+        function filter(cat, btn) {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach(card => {
+                if (cat === 'todos' || card.getAttribute('data-category') === cat) {
+                    card.style.display = 'block';
+                    setTimeout(() => card.style.opacity = "1", 10);
+                } else {
+                    card.style.opacity = "0";
+                    setTimeout(() => card.style.display = 'none', 300); // Dar tiempo a la opacidad
+                }
+            });
+        }
+
+        function sendOrder(name, price) {
+            const message = `Hola Dulce Valentina, me gustaría consultar por el siguiente producto de tu catálogo:\n\n*Producto:* ${name}\n*Precio:* ${price}\n\nQuedo atenta a la disponibilidad. Gracias.`;
+            const encoded = encodeURIComponent(message);
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`, '_blank');
+        }
+
+        // Cargar productos al iniciar
+        fetchProducts();
+    </script>
+</body>
+
+</html>
