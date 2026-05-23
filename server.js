@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 const { put } = require('@vercel/blob');
+const { Pool } = require('pg');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,19 +15,49 @@ app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Helper to read DB
-const readDB = () => {
-    try {
-        const data = fs.readFileSync(DB_FILE, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        return [];
-    }
-};
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+});
 
-// Helper to write DB
-const writeDB = (data) => {
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+const initDB = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS products (
+                id VARCHAR(255) PRIMARY KEY,
+                name VARCHAR(255),
+                category VARCHAR(255),
+                image TEXT,
+                description TEXT,
+                tag VARCHAR(255),
+                info VARCHAR(255),
+                "priceDisplay" VARCHAR(255),
+                "priceValue" VARCHAR(255)
+            )
+        `);
+        
+        const { rows } = await pool.query('SELECT COUNT(*) FROM products');
+        if (parseInt(rows[0].count) === 0) {
+            console.log('Migrating initial data from JSON...');
+            try {
+                if (fs.existsSync(DB_FILE)) {
+                    const data = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+                    for (const p of data) {
+                        await pool.query(
+                            `INSERT INTO products (id, name, category, image, description, tag, info, "priceDisplay", "priceValue") 
+                             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+                            [p.id, p.name, p.category, p.image, p.description, p.tag, p.info, p.priceDisplay, p.priceValue]
+                        );
+                    }
+                    console.log('Migration complete.');
+                }
+            } catch (e) {
+                console.error('Error migrating data:', e);
+            }
+        }
+    } catch (err) {
+        console.error('Error initializing database:', err);
+    }
 };
 
 // --- AUTH MIDDLEWARE ---
@@ -82,45 +113,71 @@ app.post('/api/upload', requireAuth, upload.single('image'), async (req, res) =>
 });
 
 // --- PRODUCT ROUTES ---
-app.get('/api/products', (req, res) => {
-    const products = readDB();
-    res.json(products);
-});
-
-app.post('/api/products', requireAuth, (req, res) => {
-    const products = readDB();
-    const newProduct = {
-        id: Date.now().toString(),
-        ...req.body
-    };
-    products.push(newProduct);
-    writeDB(products);
-    res.status(201).json(newProduct);
-});
-
-app.put('/api/products/:id', requireAuth, (req, res) => {
-    const products = readDB();
-    const index = products.findIndex(p => p.id === req.params.id);
-    if (index !== -1) {
-        products[index] = { ...products[index], ...req.body, id: req.params.id };
-        writeDB(products);
-        res.json(products[index]);
-    } else {
-        res.status(404).json({ error: 'Producto no encontrado' });
+app.get('/api/products', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM products ORDER BY id DESC');
+        res.json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Database error' });
     }
 });
 
-app.delete('/api/products/:id', requireAuth, (req, res) => {
-    const products = readDB();
-    const filteredProducts = products.filter(p => p.id !== req.params.id);
-    if (products.length !== filteredProducts.length) {
-        writeDB(filteredProducts);
-        res.json({ success: true });
-    } else {
-        res.status(404).json({ error: 'Producto no encontrado' });
+app.post('/api/products', requireAuth, async (req, res) => {
+    try {
+        const id = Date.now().toString();
+        const { name, category, image, description, tag, info, priceDisplay, priceValue } = req.body;
+        
+        const { rows } = await pool.query(
+            `INSERT INTO products (id, name, category, image, description, tag, info, "priceDisplay", "priceValue") 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+            [id, name, category, image, description, tag, info, priceDisplay, priceValue]
+        );
+        res.status(201).json(rows[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Database error' });
     }
 });
 
-app.listen(PORT, () => {
+app.put('/api/products/:id', requireAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, category, image, description, tag, info, priceDisplay, priceValue } = req.body;
+        
+        const { rows } = await pool.query(
+            `UPDATE products SET name = $1, category = $2, image = $3, description = $4, tag = $5, info = $6, "priceDisplay" = $7, "priceValue" = $8 WHERE id = $9 RETURNING *`,
+            [name, category, image, description, tag, info, priceDisplay, priceValue, id]
+        );
+        
+        if (rows.length > 0) {
+            res.json(rows[0]);
+        } else {
+            res.status(404).json({ error: 'Producto no encontrado' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
+app.delete('/api/products/:id', requireAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { rowCount } = await pool.query('DELETE FROM products WHERE id = $1', [id]);
+        
+        if (rowCount > 0) {
+            res.json({ success: true });
+        } else {
+            res.status(404).json({ error: 'Producto no encontrado' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
+app.listen(PORT, async () => {
+    await initDB();
     console.log(`Server running on http://localhost:${PORT}`);
 });
