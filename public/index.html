@@ -10,7 +10,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Plus+Jakarta+Sans:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
         rel="stylesheet">
-    <!-- Carga de Font Awesome para que el icono de WhatsApp funcione -->
+    <!-- Iconos Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
@@ -34,9 +34,13 @@
             border-bottom: 1px solid rgba(214, 51, 132, 0.1);
         }
 
+        /* Estructura de tarjeta para altura uniforme */
         .product-card {
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             background: white;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .product-card:hover {
@@ -70,8 +74,22 @@
 
         .btn-whatsapp:hover {
             background-color: #25d366;
-            /* Cambiado a color verde WhatsApp al hover */
             transform: scale(1.02);
+        }
+
+        /* Limitar líneas de texto para mantener estética */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -91,19 +109,8 @@
             <div class="flex items-center gap-6">
                 <a href="https://instagram.com/dulce.valentinacl" target="_blank"
                     class="text-[11px] font-semibold tracking-widest uppercase hover:text-[#d63384] transition-colors flex items-center gap-2">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                    </svg>
+                    <i class="fa-brands fa-instagram text-base"></i>
                     <span class="hidden sm:inline">@dulce.valentinacl</span>
-                </a>
-                <a href="/admin/login.html"
-                    class="text-[11px] font-semibold tracking-widest uppercase text-gray-400 hover:text-[#d63384] transition-colors flex items-center gap-2"
-                    title="Panel de Control">
-                    <i class="fa-solid fa-user-lock text-sm"></i>
-                    <span class="hidden sm:inline">Admin</span>
                 </a>
             </div>
         </div>
@@ -140,18 +147,26 @@
     <!-- Footer -->
     <footer class="bg-white py-20 px-6 text-center border-t border-gray-50">
         <div class="font-fancy text-4xl text-[#d63384] mb-6">Dulce Valentina</div>
-        <div class="flex justify-center gap-8 mb-10 text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
-            <a href="https://instagram.com/dulce.valentinacl" class="hover:text-[#d63384] transition-all">Instagram</a>
-            <a href="https://wa.me/569XXXXXXXX" class="hover:text-[#d63384] transition-all">WhatsApp</a>
+
+        <!-- Enlaces Footer incluyendo el nuevo acceso Admin -->
+        <div
+            class="flex flex-wrap justify-center gap-8 mb-10 text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
+            <a href="https://instagram.com/dulce.valentinacl" target="_blank"
+                class="hover:text-[#d63384] transition-all">Instagram</a>
+            <a href="https://wa.me/56982092998" target="_blank" class="hover:text-[#d63384] transition-all">WhatsApp</a>
+            <a href="/admin/login.html" class="hover:text-[#d63384] transition-all flex items-center gap-2">
+                <i class="fa-solid fa-user-lock text-[11px]"></i> Admin
+            </a>
         </div>
+
         <div class="max-w-xs mx-auto h-[1px] bg-gray-100 mb-8"></div>
-        <p class="text-[9px] tracking-[0.4em] opacity-30 uppercase">Longa, Chile &bull; Repostería Fina &bull; 2024
+        <p class="text-[9px] tracking-[0.4em] opacity-30 uppercase">Longaví, Chile &bull; Repostería Fina &bull; 2024
         </p>
     </footer>
 
     <script>
-        // CONFIGURACIÓN DE CONTACTO
-        const WHATSAPP_NUMBER = "569XXXXXXXX";
+        // CONFIGURACIÓN DE CONTACTO ACTUALIZADA (+56 9 8209 2998)
+        const WHATSAPP_NUMBER = "56982092998";
 
         async function fetchProducts() {
             try {
@@ -159,13 +174,13 @@
                 const products = await response.json();
                 renderProducts(products);
             } catch (error) {
-                console.error("Error loading products:", error);
+                console.error("Error cargando productos:", error);
             }
         }
 
         function renderProducts(products) {
             const container = document.getElementById('catalog-container');
-            container.innerHTML = ''; // Limpiar loader
+            container.innerHTML = '';
 
             products.forEach(p => {
                 const tagHtml = p.tag ? `
@@ -175,38 +190,43 @@
 
                 const cardHtml = `
                     <div class="product-card rounded-t-[3rem] rounded-b-2xl overflow-hidden" data-category="${p.category}">
-                        <div class="relative h-80 overflow-hidden">
+                        <div class="relative h-80 flex-shrink-0 overflow-hidden bg-gray-50">
                             <img src="${p.image}"
                                 alt="${p.name}"
                                 onerror="this.src='/logo.png'"
                                 class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
                             ${tagHtml}
                         </div>
-                        <div class="p-8">
-                            <h3 class="font-title text-2xl mb-3">${p.name}</h3>
-                            <p class="text-xs leading-relaxed opacity-60 mb-6">${p.description}</p>
 
-                            <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-50">
-                                <span class="text-[10px] uppercase tracking-widest opacity-40 italic">${p.info}</span>
-                                <span class="price-text">${p.priceDisplay}</span>
+                        <div class="p-8 flex flex-col flex-grow">
+                            <!-- Altura fija para el título -->
+                            <h3 class="font-title text-2xl mb-3 line-clamp-2 h-16">${p.name}</h3>
+                            
+                            <!-- Descripción con recorte estético -->
+                            <p class="text-xs leading-relaxed opacity-60 mb-6 line-clamp-3 flex-grow">${p.description}</p>
+
+                            <div class="mt-auto">
+                                <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-50">
+                                    <span class="text-[10px] uppercase tracking-widest opacity-40 italic">${p.info}</span>
+                                    <span class="price-text">${p.priceDisplay}</span>
+                                </div>
+
+                                <button onclick="sendOrder('${p.name}', '${p.priceValue}')"
+                                    class="btn-whatsapp w-full text-white py-4 rounded-xl flex items-center justify-center gap-3 text-xs font-bold uppercase tracking-widest">
+                                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                                    Consultar pedido
+                                </button>
                             </div>
-
-                            <button onclick="sendOrder('${p.name}', '${p.priceValue}')"
-                                class="btn-whatsapp w-full text-white py-4 rounded-xl flex items-center justify-center gap-3 text-xs font-bold uppercase tracking-widest">
-                                <i class="fa-brands fa-whatsapp text-lg" style="color: rgb(255, 255, 255);"></i>
-                                Consultar pedido
-                            </button>
                         </div>
                     </div>
                 `;
                 container.innerHTML += cardHtml;
             });
 
-            // Re-aplicar el filtro activo si hay alguno seleccionado
             const activeBtn = document.querySelector('.category-btn.active');
             if (activeBtn) {
-                const cat = activeBtn.innerText.toLowerCase();
-                filter(cat === 'todos' ? 'todos' : cat, activeBtn);
+                const catText = activeBtn.innerText.toLowerCase();
+                filter(catText === 'todos' ? 'todos' : catText, activeBtn);
             }
         }
 
@@ -217,11 +237,11 @@
             const cards = document.querySelectorAll('.product-card');
             cards.forEach(card => {
                 if (cat === 'todos' || card.getAttribute('data-category') === cat) {
-                    card.style.display = 'block';
+                    card.style.display = 'flex';
                     setTimeout(() => card.style.opacity = "1", 10);
                 } else {
                     card.style.opacity = "0";
-                    setTimeout(() => card.style.display = 'none', 300); // Dar tiempo a la opacidad
+                    setTimeout(() => card.style.display = 'none', 300);
                 }
             });
         }
@@ -232,7 +252,6 @@
             window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`, '_blank');
         }
 
-        // Cargar productos al iniciar
         fetchProducts();
     </script>
 </body>
