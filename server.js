@@ -3,6 +3,8 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const path = require('path');
+const multer = require('multer');
+const { put } = require('@vercel/blob');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -57,6 +59,25 @@ app.get('/api/check-auth', (req, res) => {
         res.json({ authenticated: true });
     } else {
         res.json({ authenticated: false });
+    }
+});
+
+// --- UPLOAD ROUTE ---
+const upload = multer();
+app.post('/api/upload', requireAuth, upload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No image provided' });
+        }
+        
+        const blob = await put(`images/${Date.now()}-${req.file.originalname}`, req.file.buffer, {
+            access: 'public',
+        });
+        
+        res.json({ url: blob.url });
+    } catch (error) {
+        console.error('Upload error:', error);
+        res.status(500).json({ error: 'Error uploading image' });
     }
 });
 

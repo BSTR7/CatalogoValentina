@@ -149,8 +149,13 @@
                 </div>
                 
                 <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">URL Imagen</label>
-                    <input type="url" id="prod-image" class="input-field" placeholder="https://..." required>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Imagen del Producto</label>
+                    <input type="file" id="prod-image-file" class="input-field" accept="image/*">
+                    <input type="hidden" id="prod-image">
+                    <p class="text-[10px] opacity-60 mt-1" id="prod-image-help">Sube una nueva imagen o mantén la actual.</p>
+                    <div id="image-preview" class="mt-2 hidden">
+                        <img id="image-preview-img" src="" class="h-20 rounded-lg object-cover border border-gray-200">
+                    </div>
                 </div>
                 
                 <div>
@@ -247,6 +252,9 @@
             const form = document.getElementById('productForm');
             form.reset();
             document.getElementById('prod-id').value = '';
+            document.getElementById('prod-image').value = '';
+            document.getElementById('image-preview').classList.add('hidden');
+            document.getElementById('image-preview-img').src = '';
             document.getElementById('modal-title').innerText = 'Añadir Producto';
 
             if(id) {
@@ -256,7 +264,17 @@
                     document.getElementById('prod-id').value = p.id;
                     document.getElementById('prod-name').value = p.name;
                     document.getElementById('prod-category').value = p.category;
-                    document.getElementById('prod-image').value = p.image;
+                    document.getElementById('prod-image').value = p.image || '';
+                    document.getElementById('prod-image-file').value = '';
+                    
+                    const preview = document.getElementById('image-preview');
+                    const previewImg = document.getElementById('image-preview-img');
+                    if (p.image) {
+                        previewImg.src = p.image;
+                        preview.classList.remove('hidden');
+                    } else {
+                        preview.classList.add('hidden');
+                    }
                     document.getElementById('prod-desc').value = p.description;
                     document.getElementById('prod-tag').value = p.tag || '';
                     document.getElementById('prod-info').value = p.info;
@@ -274,14 +292,64 @@
             modalContent.classList.add('scale-95');
         }
 
+        document.getElementById('prod-image-file').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('image-preview-img').src = e.target.result;
+                    document.getElementById('image-preview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const fileInput = document.getElementById('prod-image-file');
+            let imageUrl = document.getElementById('prod-image').value;
+            
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            
+            if (fileInput.files.length > 0) {
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Subiendo...';
+                submitBtn.disabled = true;
+                
+                const formData = new FormData();
+                formData.append('image', fileInput.files[0]);
+                
+                try {
+                    const uploadRes = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!uploadRes.ok) throw new Error('Error al subir imagen');
+                    
+                    const uploadData = await uploadRes.json();
+                    imageUrl = uploadData.url;
+                } catch (error) {
+                    alert('Error subiendo la imagen: ' + error.message);
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+            }
+
+            if (!imageUrl) {
+                alert('Por favor selecciona una imagen');
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+                return;
+            }
+
             const id = document.getElementById('prod-id').value;
             const data = {
                 name: document.getElementById('prod-name').value,
                 category: document.getElementById('prod-category').value,
-                image: document.getElementById('prod-image').value,
+                image: imageUrl,
                 description: document.getElementById('prod-desc').value,
                 tag: document.getElementById('prod-tag').value,
                 info: document.getElementById('prod-info').value,
@@ -297,6 +365,9 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
+            
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
             
             closeModal();
             loadProducts();
