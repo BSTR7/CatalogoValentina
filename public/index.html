@@ -235,15 +235,34 @@
             if (btn) btn.classList.add('active');
 
             const cards = document.querySelectorAll('.product-card');
+            
+            // 1. Ocultar suavemente todas las tarjetas primero
             cards.forEach(card => {
-                if (cat === 'todos' || card.getAttribute('data-category') === cat) {
-                    card.style.display = 'flex';
-                    setTimeout(() => card.style.opacity = "1", 10);
-                } else {
-                    card.style.opacity = "0";
-                    setTimeout(() => card.style.display = 'none', 300);
-                }
+                card.style.opacity = "0";
+                card.style.transform = "scale(0.95)";
             });
+
+            // 2. Esperar que termine la transición para reorganizar la cuadrícula
+            setTimeout(() => {
+                cards.forEach(card => {
+                    if (cat === 'todos' || card.getAttribute('data-category') === cat) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // 3. Forzar repintado para aplicar el nuevo layout
+                void document.body.offsetHeight;
+
+                // 4. Mostrar de forma fluida las tarjetas visibles
+                cards.forEach(card => {
+                    if (cat === 'todos' || card.getAttribute('data-category') === cat) {
+                        card.style.opacity = "1";
+                        card.style.transform = "scale(1)";
+                    }
+                });
+            }, 300);
         }
 
         function sendOrder(name, price) {
